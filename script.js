@@ -162,24 +162,66 @@ document.addEventListener('DOMContentLoaded', () => {
     updateGalleryProgress();
   }
 
-  // Contact form
-  const contactForm = document.getElementById('contactForm');
+ // Contact form - send enquiries to WhatsApp
+const contactForm = document.getElementById('contactForm');
 
-  if (contactForm) {
-    contactForm.addEventListener('submit', (event) => {
-      event.preventDefault();
+if (contactForm) {
+  contactForm.addEventListener('submit', (event) => {
+    event.preventDefault();
 
-      const status =
-        event.currentTarget.querySelector('.form-status');
+    const form = event.currentTarget;
+    const status = form.querySelector('.form-status');
+
+    const name = form.querySelector('[name="name"]')?.value.trim() || '';
+    const email = form.querySelector('[name="email"]')?.value.trim() || '';
+    const interest =
+      form.querySelector('[name="interest"]')?.value.trim() ||
+      'General enquiry';
+    const message =
+      form.querySelector('[name="message"]')?.value.trim() || '';
+
+    if (!name || !message) {
+      if (status) {
+        status.textContent =
+          'Please enter your name and message before continuing.';
+      }
+
+      return;
+    }
+
+    const whatsappNumber = '27662913726';
+
+    const whatsappMessage = `
+*New Website Enquiry*
+Mount of Hope Agriculture Holdings
+
+*Name:* ${name}
+*Email:* ${email || 'Not provided'}
+*Enquiry Type:* ${interest}
+
+*Message:*
+${message}
+    `.trim();
+
+    const whatsappURL =
+      `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
+
+    if (status) {
+      status.textContent = 'Opening WhatsApp...';
+    }
+
+    window.open(whatsappURL, '_blank', 'noopener,noreferrer');
+
+    window.setTimeout(() => {
+      form.reset();
 
       if (status) {
         status.textContent =
-          'Thank you. Your enquiry has been prepared. Connect this form to your email service before launch.';
+          'Your enquiry has been prepared in WhatsApp. Please press Send to complete it.';
       }
-
-      event.currentTarget.reset();
-    });
-  }
+    }, 500);
+  });
+}
 
   // Dynamic copyright year
   const yearElement = document.getElementById('year');
